@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Price Prediction</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; margin: 20px; }
+        input, button { padding: 10px; margin: 10px; }
+        #loading { display: none; font-size: 14px; color: blue; }
+    </style>
+    <script>
+        async function getPrediction() {
+            let ticker = document.getElementById("ticker").value.trim();
+            if (!ticker) {
+                alert("Please enter a stock ticker.");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("ticker", ticker);
+
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("result").innerHTML = "";
+
+            try {
+                let response = await fetch("/predict", { method: "POST", body: formData });
+                if (!response.ok) throw new Error("Prediction failed");
+                let data = await response.json();
+                document.getElementById("result").innerHTML = `<img src="data:image/png;base64,${data.plot_url}" alt="Stock Prediction Graph">`;
+            } catch (error) {
+                document.getElementById("result").innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            } finally {
+                document.getElementById("loading").style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Stock Price Prediction</h2>
+    <input type="text" id="ticker" placeholder="Enter Stock Ticker">
+    <button onclick="getPrediction()">Predict</button>
+    <p id="loading">Loading...</p>
+    <div id="result"></div>
+
+    <footer>
+        <p>Made by - <b>Anam Khan</b><br>
+        MBA - Financial Management<br>
+        Aligarh Muslim University</p>
+    </footer>
+</body>
+</html>
